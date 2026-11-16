@@ -1,0 +1,1552 @@
+可以。這份網站會做成 **7 個可切換的手機溫習分頁**：以英文概念、定義和例子為主，配上簡短中文解說，讓你一邊熟習考試用語，一邊釐清容易混淆的地方。
+
+內容以我們之前整理的單元和你提供的 **Lecture 10** 講義為基礎，並加入部分幫助理解的延伸說明。它是一份**溫習摘要，不是逐頁完整講義**；考試範圍及課堂用詞仍以老師的材料為準。
+
+## 網站功能
+
+- 7 個分頁，可按需要切換。
+- 適合手機閱讀，英文在前，中文補充在後。
+- 每個單元包括重點、易混淆概念和簡短例子。
+- 會嘗試記住上次開啟的分頁；不會跨裝置同步。
+- 沒有外部程式庫，可把檔案存到裝置後離線開啟。
+
+## 建立方法
+
+1. 建立新的 repository，例如 `ss5212-revision-guide`。
+2. 建立 `index.html`，貼上以下完整程式碼並儲存。
+3. **確認有權公開後**，到 **Settings → Pages**，選擇 `main` 和 `/ (root)`，按 **Save**。
+
+未確認公開權限前，可先把程式碼存成 `index.html`，在個人裝置的瀏覽器開啟。GitHub 網頁本身不保證離線可用；要離線使用，請先把完整 HTML 檔案存到裝置。
+
+講義禁止未經許可向第三方分享課程材料。以下是重新編寫的摘要；公開發布是否符合課程及大學規定，仍請先向老師或大學確認。
+
+---
+
+## 完整網頁編碼
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>SS5212 Mobile Revision Guide</title>
+
+<style>
+  :root {
+    --navy: #253f73;
+    --blue: #315bb0;
+    --light-blue: #eef4ff;
+    --green: #16714a;
+    --light-green: #edf9f2;
+    --gold: #8b6010;
+    --light-gold: #fff8e7;
+    --text: #243047;
+    --muted: #586780;
+    --background: #f2f5fa;
+    --border: #dce4f0;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, "Noto Sans TC", sans-serif;
+    line-height: 1.65;
+  }
+
+  .container {
+    width: min(100% - 28px, 900px);
+    margin: 0 auto;
+    padding: 18px 0 50px;
+  }
+
+  header {
+    background: white;
+    border-radius: 16px;
+    padding: 22px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+  }
+
+  h1 {
+    color: var(--navy);
+    line-height: 1.25;
+    margin: 0 0 10px;
+    font-size: clamp(1.55rem, 5vw, 2rem);
+  }
+
+  h2 {
+    color: var(--navy);
+    line-height: 1.3;
+    margin-top: 0;
+  }
+
+  h3 {
+    color: #244e8e;
+    line-height: 1.35;
+    margin-top: 1.35em;
+  }
+
+  h4 {
+    color: #2d4774;
+    margin-bottom: 0.35em;
+  }
+
+  p {
+    margin: 0.65em 0;
+  }
+
+  ul, ol {
+    padding-left: 1.3em;
+  }
+
+  li {
+    margin: 0.4em 0;
+  }
+
+  .small {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+
+  .tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin: 16px 0;
+  }
+
+  .tab {
+    min-height: 52px;
+    padding: 10px;
+    border: 1px solid #cbd8ed;
+    border-radius: 10px;
+    background: white;
+    color: var(--navy);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .tab:hover {
+    background: var(--light-blue);
+  }
+
+  .tab[aria-selected="true"] {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  .tab:focus-visible {
+    outline: 3px solid #e29b2b;
+    outline-offset: 2px;
+  }
+
+  .panel {
+    display: none;
+  }
+
+  .panel.active {
+    display: block;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 20px;
+    margin: 14px 0;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05);
+  }
+
+  .intro {
+    border-left: 5px solid var(--blue);
+  }
+
+  .tip {
+    background: var(--light-gold);
+    border-left: 4px solid #dda328;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 14px 0;
+  }
+
+  .example {
+    background: var(--light-green);
+    border-left: 4px solid #38a16c;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin: 14px 0;
+  }
+
+  .zh {
+    color: #52637b;
+    font-size: 0.94rem;
+  }
+
+  .keyword {
+    color: var(--blue);
+    font-weight: bold;
+  }
+
+  .table-wrap {
+    overflow-x: auto;
+    margin: 12px 0;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 470px;
+    font-size: 0.93rem;
+  }
+
+  th, td {
+    border: 1px solid var(--border);
+    padding: 9px;
+    vertical-align: top;
+    text-align: left;
+  }
+
+  th {
+    background: var(--light-blue);
+    color: var(--navy);
+  }
+
+  details {
+    background: #f8faff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 13px;
+    margin: 10px 0;
+  }
+
+  summary {
+    color: var(--navy);
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .top-link {
+    display: inline-block;
+    margin-top: 10px;
+    color: var(--blue);
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  footer {
+    margin-top: 22px;
+    color: var(--muted);
+    font-size: 0.88rem;
+  }
+
+  @media (min-width: 700px) {
+    .tabs {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media print {
+    .tabs, .top-link {
+      display: none;
+    }
+
+    .panel {
+      display: block !important;
+      page-break-before: always;
+    }
+
+    details {
+      display: block;
+    }
+  }
+</style>
+</head>
+
+<body>
+<div class="container" id="top">
+
+<header>
+  <h1>SS5212 Mobile Revision Guide</h1>
+
+  <p>
+    <strong>English first, Chinese support.</strong>
+    Choose a section and review key concepts, contrasts and examples.
+  </p>
+
+  <p class="small">
+    Original study notes based on the topics discussed and the available
+    Lecture 10 materials. This guide is not a complete replacement for
+    the course slides, and it is not a verified past paper.
+  </p>
+
+  <p class="small">
+    The page attempts to remember your last selected section in this browser.
+    No information is sent to a server by this page.
+  </p>
+</header>
+
+<nav class="tabs" aria-label="Revision sections">
+  <button class="tab" type="button" data-panel="infancy"
+          aria-controls="infancy" aria-selected="true">
+    1. Infancy &amp; childhood
+  </button>
+
+  <button class="tab" type="button" data-panel="adolescence"
+          aria-controls="adolescence" aria-selected="false">
+    2. Adolescence
+  </button>
+
+  <button class="tab" type="button" data-panel="adulthood"
+          aria-controls="adulthood" aria-selected="false">
+    3. Adulthood
+  </button>
+
+  <button class="tab" type="button" data-panel="late"
+          aria-controls="late" aria-selected="false">
+    4. Late adulthood
+  </button>
+
+  <button class="tab" type="button" data-panel="identity"
+          aria-controls="identity" aria-selected="false">
+    5. Social identity
+  </button>
+
+  <button class="tab" type="button" data-panel="ecology"
+          aria-controls="ecology" aria-selected="false">
+    6. Ecology &amp; intersectionality
+  </button>
+
+  <button class="tab" type="button" data-panel="stress"
+          aria-controls="stress" aria-selected="false">
+    7. Stress response
+  </button>
+</nav>
+
+<main>
+
+<!-- ==================================================
+     1. INFANCY & CHILDHOOD
+     ================================================== -->
+
+<section class="panel active" id="infancy"
+         aria-label="Infancy and childhood">
+
+  <div class="card intro">
+    <h2>1. Infancy &amp; Childhood</h2>
+
+    <p>
+      Focus on <strong>psychosocial development, attachment</strong> and
+      how children use relationships to explore their environment.
+    </p>
+
+    <p class="zh">
+      重點是兒童如何透過照顧關係建立安全感、自主感及能力感。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Erikson: psychosocial development</h3>
+
+    <p>
+      A <strong>psychosocial crisis</strong> is a developmental tension
+      involving the person and social expectations. It does not necessarily
+      mean a psychiatric emergency.
+    </p>
+
+    <p class="zh">
+      Crisis 在此可指正常發展中的張力，不一定是嚴重創傷或精神科危機。
+      處理階段任務可促進一種基本能力，稱為 <strong>virtue</strong>。
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Period</th>
+            <th>Central tension</th>
+            <th>Helpful idea</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Infancy</td>
+            <td>Trust vs mistrust</td>
+            <td>Can caregivers be relied on? Virtue: hope.</td>
+          </tr>
+          <tr>
+            <td>Toddlerhood</td>
+            <td>Autonomy vs shame and doubt</td>
+            <td>Can I try to do things myself? Virtue: will.</td>
+          </tr>
+          <tr>
+            <td>Early childhood</td>
+            <td>Initiative vs guilt</td>
+            <td>Can I initiate activities and plans? Virtue: purpose.</td>
+          </tr>
+          <tr>
+            <td>School age</td>
+            <td>Industry vs inferiority</td>
+            <td>Can I learn and feel capable? Virtue: competence.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="example">
+      <strong>Example:</strong> A toddler tries to dress independently.
+      A caregiver gives time and appropriate help. This supports
+      <strong>autonomy</strong>.
+      <p class="zh">
+        幼兒嘗試自己穿衣，照顧者給予時間和適當幫助，有助建立自主感。
+      </p>
+    </div>
+
+    <div class="tip">
+      <strong>Exam tip:</strong> Identify the <em>central concern</em> in
+      the case. Age is useful, but behaviour and context provide important
+      evidence too.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Attachment theory</h3>
+
+    <p>
+      Attachment concerns a child's relationship with a caregiver,
+      particularly how the child seeks safety and comfort when distressed.
+      A <strong>secure base</strong> allows the child to explore and return
+      for support when needed.
+    </p>
+
+    <p class="zh">
+      依附關注孩子在需要保護或安慰時如何與照顧者互動。
+      安全基地讓孩子有信心探索，也能在不安時回來尋求支持。
+    </p>
+
+    <details open>
+      <summary>Four commonly described patterns</summary>
+
+      <ul>
+        <li>
+          <strong>Secure:</strong> may be upset by separation; seeks comfort
+          on reunion and can return to exploration.
+        </li>
+        <li>
+          <strong>Avoidant:</strong> tends to avoid or minimise contact on
+          reunion. Little outward distress does not prove no distress.
+        </li>
+        <li>
+          <strong>Resistant / ambivalent:</strong> seeks proximity but may
+          resist comfort and remain distressed.
+        </li>
+        <li>
+          <strong>Disorganized:</strong> behaviour may appear contradictory,
+          frozen, dazed or disoriented.
+        </li>
+      </ul>
+    </details>
+
+    <div class="tip">
+      <strong>Do not over-infer:</strong> One behaviour or one brief
+      observation is not enough to diagnose an attachment pattern or
+      determine a caregiver's history.
+      <p class="zh">
+        單一行為不足以診斷依附類型，也不能直接推斷照顧者一定曾虐待或忽視。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Social referencing &amp; development</h3>
+
+    <p>
+      <strong>Social referencing:</strong> a child looks to a trusted
+      person's emotional reaction when deciding how to respond to an
+      unfamiliar situation.
+    </p>
+
+    <div class="example">
+      <strong>Example:</strong> A child sees a new toy, looks at a caregiver's
+      face, and then approaches after seeing an encouraging expression.
+      <p class="zh">
+        孩子參考照顧者的情緒反應，協助理解陌生情境。
+      </p>
+    </div>
+
+    <p class="small">
+      Brain development and social referencing are useful extensions from
+      the childhood material; confirm their detailed exam scope with the
+      course materials.
+    </p>
+  </div>
+
+  <a class="top-link" href="#top">↑ Back to sections</a>
+</section>
+
+<!-- ==================================================
+     2. ADOLESCENCE
+     ================================================== -->
+
+<section class="panel" id="adolescence"
+         aria-label="Adolescence" hidden>
+
+  <div class="card intro">
+    <h2>2. Adolescence</h2>
+
+    <p>
+      Focus on <strong>identity development</strong>, the difference
+      between exploration and commitment, and the two dimensions of
+      parenting.
+    </p>
+
+    <p class="zh">
+      重點是青少年如何探索「我是誰」，以及如何區分不同身分認同狀態。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Erikson: identity vs role confusion</h3>
+
+    <p>
+      Adolescents work to develop a coherent sense of self while negotiating
+      belonging, values, relationships and future roles.
+    </p>
+
+    <p class="zh">
+      青少年要整合個人價值、群體歸屬和未來方向，逐步形成自我認同。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Marcia: identity formation</h3>
+
+    <p>
+      Ask two separate questions:
+    </p>
+
+    <ol>
+      <li>
+        <strong>Exploration:</strong> Is the person actively considering
+        meaningful alternatives?
+      </li>
+      <li>
+        <strong>Commitment:</strong> Has the person made a personally
+        invested choice?
+      </li>
+    </ol>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Status</th>
+            <th>Exploration</th>
+            <th>Commitment</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Diffusion</strong></td>
+            <td>Low / absent</td>
+            <td>Low / absent</td>
+          </tr>
+          <tr>
+            <td><strong>Foreclosure</strong></td>
+            <td>Little or none</td>
+            <td>Present</td>
+          </tr>
+          <tr>
+            <td><strong>Moratorium</strong></td>
+            <td>Active</td>
+            <td>Absent or not yet firm</td>
+          </tr>
+          <tr>
+            <td><strong>Achievement</strong></td>
+            <td>Exploration has occurred</td>
+            <td>Present</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <strong>Foreclosure vs moratorium:</strong>
+      foreclosure = a commitment without exploration;
+      moratorium = active exploration without a firm commitment.
+      <p class="zh">
+        早閉型：已決定但未探索。未定型：正在探索但未確定。
+      </p>
+    </div>
+
+    <div class="example">
+      <strong>Example:</strong> “My family chose accounting for me; I did
+      not consider other careers” points towards <strong>foreclosure</strong>.
+      “I am comparing accounting and nursing” points towards
+      <strong>moratorium</strong> if no firm decision has been made.
+    </div>
+
+    <p class="small">
+      A person's status may differ across domains, such as occupation
+      and beliefs. A decision alone does not show whether exploration
+      occurred.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Baumrind: parenting styles</h3>
+
+    <p>
+      Compare <strong>demandingness</strong>—rules and expectations—and
+      <strong>responsiveness</strong>—warmth and attention to the child's
+      views.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Style</th>
+            <th>Demandingness</th>
+            <th>Responsiveness</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Authoritative</strong></td>
+            <td>High</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><strong>Authoritarian</strong></td>
+            <td>High</td>
+            <td>Low</td>
+          </tr>
+          <tr>
+            <td><strong>Permissive</strong></td>
+            <td>Low</td>
+            <td>High</td>
+          </tr>
+          <tr>
+            <td><strong>Neglectful</strong></td>
+            <td>Low</td>
+            <td>Low</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <strong>Authoritative vs authoritarian:</strong>
+      both can involve rules. The difference is the degree of warmth,
+      explanation and responsiveness.
+      <p class="zh">
+        兩者都可能有規則；威信型會解釋並聆聽，專制型則較強調服從。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Self-concept &amp; self-esteem</h3>
+
+    <p>
+      <strong>Self-concept</strong> refers to how a person describes or
+      understands themselves. <strong>Self-esteem</strong> concerns
+      evaluation of one's own worth.
+    </p>
+
+    <p class="zh">
+      Self-concept 是「我如何描述自己」；self-esteem 是「我如何評價自己的價值」。
+      這是青春期講義的延伸內容，請按課程範圍複習。
+    </p>
+  </div>
+
+  <a class="top-link" href="#top">↑ Back to sections</a>
+</section>
+
+<!-- ==================================================
+     3. ADULTHOOD
+     ================================================== -->
+
+<section class="panel" id="adulthood"
+         aria-label="Adulthood" hidden>
+
+  <div class="card intro">
+    <h2>3. Adulthood</h2>
+
+    <p>
+      Focus on <strong>intimacy, generativity, love</strong> and
+      <strong>moral reasoning</strong>.
+    </p>
+
+    <p class="zh">
+      重點是成人期關係、對下一代的關懷，以及道德判斷背後的理由。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Erikson: adult tasks</h3>
+
+    <ul>
+      <li>
+        <strong>Intimacy vs isolation:</strong> developing close relationships
+        while maintaining a sense of self.
+      </li>
+      <li>
+        <strong>Generativity vs stagnation:</strong> caring for, guiding or
+        contributing to others and future generations.
+      </li>
+    </ul>
+
+    <p class="zh">
+      Generativity 不只限於生育；指導年輕人、照顧他人或貢獻社區也可能表現這個概念。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Sternberg: triangular theory of love</h3>
+
+    <ul>
+      <li>
+        <strong>Intimacy:</strong> closeness, warmth, connection and trust.
+      </li>
+      <li>
+        <strong>Passion:</strong> romantic or physical attraction and desire.
+      </li>
+      <li>
+        <strong>Commitment:</strong> a decision to love and maintain the
+        relationship.
+      </li>
+    </ul>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Type</th>
+            <th>Components</th>
+            <th>Quick reminder</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Liking</td>
+            <td>Intimacy</td>
+            <td>Close, without passion or commitment.</td>
+          </tr>
+          <tr>
+            <td>Infatuation</td>
+            <td>Passion</td>
+            <td>Strong attraction alone.</td>
+          </tr>
+          <tr>
+            <td>Empty love</td>
+            <td>Commitment</td>
+            <td>Decision to remain, without closeness or passion.</td>
+          </tr>
+          <tr>
+            <td>Romantic love</td>
+            <td>Intimacy + passion</td>
+            <td>Close and attracted; commitment not established.</td>
+          </tr>
+          <tr>
+            <td>Companionate love</td>
+            <td>Intimacy + commitment</td>
+            <td>Close and committed; passion is limited.</td>
+          </tr>
+          <tr>
+            <td>Fatuous love</td>
+            <td>Passion + commitment</td>
+            <td>Attraction and commitment, little intimacy.</td>
+          </tr>
+          <tr>
+            <td>Consummate love</td>
+            <td>All three</td>
+            <td>Intimacy, passion and commitment.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <strong>Exam strategy:</strong> Identify which components are present
+      before naming the type. Do not infer a component that the case does
+      not describe.
+      <p class="zh">
+        先找出親密、激情、承諾是否出現，再選類型；不要自行補上題目沒有的資訊。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Kohlberg: moral reasoning</h3>
+
+    <p>
+      The key question is <strong>why</strong> a person makes a judgement,
+      not simply whether the answer is “yes” or “no.”
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Stage</th>
+            <th>Reasoning focus</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Pre-conventional</td>
+            <td>1. Punishment</td>
+            <td>Avoid punishment or obey authority.</td>
+          </tr>
+          <tr>
+            <td>Pre-conventional</td>
+            <td>2. Exchange</td>
+            <td>Personal interests and reciprocal benefit.</td>
+          </tr>
+          <tr>
+            <td>Conventional</td>
+            <td>3. Relationships</td>
+            <td>Be a good person; meet others' expectations.</td>
+          </tr>
+          <tr>
+            <td>Conventional</td>
+            <td>4. Social order</td>
+            <td>Follow rules and duties to maintain order.</td>
+          </tr>
+          <tr>
+            <td>Post-conventional</td>
+            <td>5. Social contract</td>
+            <td>Protect rights; laws can be revised through agreement.</td>
+          </tr>
+          <tr>
+            <td>Post-conventional</td>
+            <td>6. Universal principles</td>
+            <td>Follow internalised ethical principles, even against rules.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <strong>Stage 5 vs stage 6:</strong>
+      Stage 5 emphasises rights, social agreement and revisable laws.
+      Stage 6 emphasises an internalised universal ethical principle.
+      <p class="zh">
+        第 5 階段重社會契約與權利；第 6 階段重個人內化、適用於所有人的倫理原則。
+      </p>
+    </div>
+  </div>
+
+  <a class="top-link" href="#top">↑ Back to sections</a>
+</section>
+
+<!-- ==================================================
+     4. LATE ADULTHOOD
+     ================================================== -->
+
+<section class="panel" id="late"
+         aria-label="Late adulthood" hidden>
+
+  <div class="card intro">
+    <h2>4. Late Adulthood</h2>
+
+    <p>
+      Focus on <strong>life review, adaptation, functioning</strong>
+      and the distinction between SOC strategies.
+    </p>
+
+    <p class="zh">
+      重點是晚年如何看待人生、適應改變及運用有限資源。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Erikson: ego integrity vs despair</h3>
+
+    <ul>
+      <li>
+        <strong>Ego integrity:</strong> finding coherence and acceptance
+        in one's life, including imperfect experiences.
+      </li>
+      <li>
+        <strong>Despair:</strong> experiencing profound regret or a sense
+        that life cannot be made meaningful.
+      </li>
+      <li>
+        <strong>Virtue:</strong> wisdom.
+      </li>
+    </ul>
+
+    <p class="zh">
+      自我圓滿不代表一生沒有錯誤，而是能承認遺憾，仍找到整體意義。
+    </p>
+
+    <div class="example">
+      <strong>Life review:</strong> A worker invites an older client to
+      reflect on meaningful events and unresolved concerns, without
+      forcing a positive interpretation.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>SOC: selective optimization with compensation</h3>
+
+    <p>
+      SOC describes strategies for pursuing meaningful goals when resources
+      are limited or changing. It is not restricted to older adulthood.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Strategy</th>
+            <th>Main question</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Elective selection</td>
+            <td>Which goal matters most by preference?</td>
+            <td>Choose music as a priority without a recent loss.</td>
+          </tr>
+          <tr>
+            <td>Loss-based selection</td>
+            <td>Which goal should change after resource loss?</td>
+            <td>Reduce activities after stamina declines.</td>
+          </tr>
+          <tr>
+            <td>Optimization</td>
+            <td>How can skills or resources improve goal pursuit?</td>
+            <td>Practise regularly to improve performance.</td>
+          </tr>
+          <tr>
+            <td>Compensation</td>
+            <td>What alternative means can maintain the goal?</td>
+            <td>Use a magnifier after vision loss to keep reading.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <strong>Selection vs compensation:</strong>
+      changing or prioritising goals after loss suggests loss-based
+      selection; keeping a goal but using an alternative means suggests
+      compensation.
+      <p class="zh">
+        改變目標或優先次序：loss-based selection；
+        維持目標但改用方法：compensation。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Peck: additional late-adulthood concepts</h3>
+
+    <p class="small">
+      These concepts are developed in Lecture 9 and are supplementary
+      to the clearly visible Lecture 10 overview.
+    </p>
+
+    <ul>
+      <li>
+        <strong>Ego differentiation:</strong> find self-worth beyond a
+        former work role.
+      </li>
+      <li>
+        <strong>Body transcendence:</strong> find enjoyment and meaning
+        beyond physical limitations, while still attending to health needs.
+      </li>
+      <li>
+        <strong>Ego transcendence:</strong> face mortality constructively
+        and find meaning beyond one's individual lifespan.
+      </li>
+    </ul>
+
+    <p class="zh">
+      分別是：超越工作角色、超越身體限制，以及以建設性方式面對生命有限。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Age &amp; everyday functioning</h3>
+
+    <ul>
+      <li><strong>Chronological age:</strong> age in years.</li>
+      <li><strong>Biological age:</strong> condition of body systems.</li>
+      <li><strong>Psychological age:</strong> how a person acts and feels.</li>
+      <li><strong>Functional age:</strong> how a person performs daily roles.</li>
+    </ul>
+
+    <p>
+      <strong>ADLs:</strong> basic personal care, such as eating, dressing,
+      bathing and toileting.
+    </p>
+
+    <p>
+      <strong>IADLs:</strong> activities supporting independent living,
+      such as shopping, managing money and managing medication.
+    </p>
+
+    <p class="zh">
+      實際能力不能只靠出生年份推斷。ADL 是基本個人照顧；
+      IADL 是支持獨立生活的工具性活動。
+    </p>
+  </div>
+
+  <a class="top-link" href="#top">↑ Back to sections</a>
+</section>
+
+<!-- ==================================================
+     5. SOCIAL IDENTITY
+     ================================================== -->
+
+<section class="panel" id="identity"
+         aria-label="Social identity, power and privilege" hidden>
+
+  <div class="card intro">
+    <h2>5. Social Identity, Power &amp; Privilege</h2>
+
+    <p>
+      Focus on how social identities relate to <strong>power, access,
+      advantage and disadvantage</strong>.
+    </p>
+
+    <p class="zh">
+      重點不只是列出身分，而是理解身分如何與社會權力和資源分配相連。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Key distinctions</h3>
+
+    <ul>
+      <li>
+        <strong>Social identity:</strong> a social position or group
+        membership, such as gender, ethnicity, age or disability status.
+      </li>
+      <li>
+        <strong>Stereotype:</strong> a generalised belief about a group.
+      </li>
+      <li>
+        <strong>Prejudice:</strong> an attitude or judgement towards people
+        based on group membership.
+      </li>
+      <li>
+        <strong>Discrimination:</strong> unfair treatment related to group
+        membership or social identity.
+      </li>
+      <li>
+        <strong>Oppression:</strong> a broader pattern of disadvantage
+        maintained through power, institutions and social practices.
+      </li>
+    </ul>
+
+    <div class="example">
+      <strong>Example:</strong> Assuming all older applicants cannot learn
+      software is a <strong>stereotype</strong>. Refusing a qualified
+      applicant an interview because of age is an example of
+      <strong>discrimination</strong>.
+      <p class="zh">
+        想法與行動要分清：群體概括是刻板印象；具體不公平待遇是歧視。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Privilege &amp; the coin model</h3>
+
+    <p>
+      <strong>Privilege</strong> refers to advantages associated with a
+      social position in a particular context. A person may have advantages
+      in one area while facing barriers in another.
+    </p>
+
+    <p>
+      The <strong>coin model</strong> encourages us to examine how advantage
+      and oppression are connected within systems, rather than treating
+      inequality only as individual intentions.
+    </p>
+
+    <p class="zh">
+      Coin model 把 privilege 和 oppression 放在同一社會關係中理解。
+      有優勢不代表該人一定有歧視意圖。
+    </p>
+
+    <div class="example">
+      <strong>Example:</strong> A high-income wheelchair user may afford
+      private transport but still face inaccessible public buildings.
+      Economic advantage and disability-related barriers can coexist.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Power &amp; professional reflexivity</h3>
+
+    <p>
+      Social workers may control information, assessments or access to
+      services. <strong>Reflexivity</strong> means considering how one's
+      role and assumptions affect the professional relationship.
+    </p>
+
+    <p class="zh">
+      社工應反思自己的專業權力，並留意服務使用者是否有空間表達不同意見。
+    </p>
+
+    <div class="tip">
+      <strong>Evidence matters:</strong> An unsuccessful application alone
+      does not prove or rule out discrimination. Explore the criteria,
+      process and the person's account.
+    </div>
+  </div>
+
+  <a class="top-link" href="#top">↑ Back to sections</a>
+</section>
+
+<!-- ==================================================
+     6. ECOLOGY & INTERSECTIONALITY
+     ================================================== -->
+
+<section class="panel" id="ecology"
+         aria-label="Ecological theory and intersectionality" hidden>
+
+  <div class="card intro">
+    <h2>6. Ecological Theory &amp; Intersectionality</h2>
+
+    <p>
+      Focus on the interaction between people and environments, and on
+      how multiple social positions connect with structural conditions.
+    </p>
+
+    <p class="zh">
+      先確認「誰是分析對象」，再判斷環境是直接、間接，還是不同環境之間的連結。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Bronfenbrenner's ecological systems</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Level</th>
+            <th>Key idea</th>
+            <th>Example for a child</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Person</td>
+            <td>The active, developing individual.</td>
+            <td>The child's health, preferences and experiences.</td>
+          </tr>
+          <tr>
+            <td>Microsystem</td>
+            <td>A direct setting and interactions within it.</td>
+            <td>The child's classroom or family interaction.</td>
+          </tr>
+          <tr>
+            <td>Mesosystem</td>
+            <td>Links between direct settings.</td>
+            <td>Parent and teacher coordinate support.</td>
+          </tr>
+          <tr>
+            <td>Exosystem</td>
+            <td>An indirect setting affecting the person.</td>
+            <td>A parent's workplace changes shifts.</td>
+          </tr>
+          <tr>
+            <td>Macrosystem</td>
+            <td>Broad cultural and institutional patterns.</td>
+            <td>Social beliefs and wider policy context.</td>
+          </tr>
+          <tr>
+            <td>Chronosystem</td>
+            <td>Time, transitions and historical change.</td>
+            <td>Migration and school changes over several years.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="example">
+      <strong>Focal person matters:</strong> A workplace is a
+      <strong>microsystem for a parent</strong> who works there, but may be
+      an <strong>exosystem for the child</strong> who never attends yet is
+      affected by the parent's working hours.
+    </div>
+
+    <div class="tip">
+      <strong>Micro vs meso vs exo:</strong>
+      direct setting → microsystem;
+      link between direct settings → mesosystem;
+      indirect setting → exosystem.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Lecture 10: micro–mezzo–macro</h3>
+
+    <ul>
+      <li>
+        <strong>Micro:</strong> individual biological, psychological,
+        social and cognitive characteristics.
+      </li>
+      <li>
+        <strong>Mezzo:</strong> interpersonal environment, such as family,
+        friends, school and workplace relationships.
+      </li>
+      <li>
+        <strong>Macro:</strong> structural environment, such as policy,
+        regulation and law.
+      </li>
+    </ul>
+
+    <div class="tip">
+      <strong>Important:</strong> These labels are not identical to
+      Bronfenbrenner's labels. A child's direct interaction with a teacher
+      is a <strong>microsystem</strong> interaction in Bronfenbrenner's
+      model, but the interpersonal environment is <strong>mezzo</strong>
+      in Lecture 10's three-level approach.
+      <p class="zh">
+        這兩套框架的用字不同，不要把 mezzo 和 mesosystem 當作同義詞。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Intersectionality</h3>
+
+    <p>
+      Multiple social identities and positions interact with interpersonal
+      and structural systems to shape experiences. Intersectionality is
+      more than simply adding up identity labels.
+    </p>
+
+    <div class="example">
+      <strong>Example:</strong> A worker explores how gender, disability
+      and income interact with hiring practices and transport access.
+      <p class="zh">
+        交織性不只問「當事人有多少種身分」，還要問這些身分如何與制度及權力互動。
+      </p>
+    </div>
+
+    <p>
+      A <strong>single-axis</strong> analysis may miss people whose
+      experiences occur at the intersection of more than one social
+      position.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Iceberg thinking</h3>
+
+    <p>
+      A visible behaviour or presenting problem is a starting point.
+      Explore what is happening now, what has happened over time, and
+      possible individual, relational and structural influences.
+    </p>
+
+    <p class="zh">
+      不要只看「冰山一角」；但也不能未經評估就假設隱藏原因。
+    </p>
+  </div>
+
+  <a class="top-link" href="#top">↑ Back to sections</a>
+</section>
+
+<!-- ==================================================
+     7. STRESS RESPONSE
+     ================================================== -->
+
+<section class="panel" id="stress"
+         aria-label="Stress response" hidden>
+
+  <div class="card intro">
+    <h2>7. Stress Response</h2>
+
+    <p>
+      Focus on <strong>stressor vs stress</strong>, the three response
+      categories, bodily adaptation and ACE scoring.
+    </p>
+
+    <p class="zh">
+      重點是區分外在壓力源、個人壓力經驗、身體反應及童年逆境。
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Stressor, stress &amp; stress response</h3>
+
+    <ul>
+      <li>
+        <strong>Stressor:</strong> an external event or circumstance that
+        challenges adaptation.
+      </li>
+      <li>
+        <strong>Stress:</strong> a subjective state associated with
+        appraising demands as exceeding available resources.
+      </li>
+      <li>
+        <strong>Stress response:</strong> physiological and behavioural
+        responses that help the body deal with a challenge.
+      </li>
+    </ul>
+
+    <div class="example">
+      <strong>Example:</strong> Job loss is a <strong>stressor</strong>.
+      Worry that savings will not cover rent is part of the person's
+      <strong>stress experience</strong>. Increased heart rate can be part
+      of a <strong>stress response</strong>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Three response categories in the lecture</h3>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Key idea</th>
+            <th>Support / context</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Positive stress</td>
+            <td>A challenge is managed and can build mastery.</td>
+            <td>Usually manageable with available resources.</td>
+          </tr>
+          <tr>
+            <td>Tolerable stress</td>
+            <td>A serious negative event is buffered.</td>
+            <td>Adequate personal or social support is available.</td>
+          </tr>
+          <tr>
+            <td>Toxic stress</td>
+            <td>Prolonged or severe adversity may produce excessive activation.</td>
+            <td>Especially concerning when adequate support is absent.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <strong>Do not classify from the event name alone.</strong>
+      Consider severity, duration, frequency, controllability and support.
+      One ACE does not automatically prove toxic stress.
+      <p class="zh">
+        不能只憑事件名稱判斷；要看持續時間、程度和支持。
+        一個 ACE 不自動等於 toxic stress。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Homeostasis, allostasis &amp; allostatic load</h3>
+
+    <ul>
+      <li>
+        <strong>Homeostasis:</strong> maintaining physiological balance
+        within a workable range.
+      </li>
+      <li>
+        <strong>Allostasis:</strong> adaptive changes that help the body
+        meet demands and manage threats.
+      </li>
+      <li>
+        <strong>Allostatic load:</strong> cumulative physiological burden
+        associated with repeated or prolonged adaptation.
+      </li>
+    </ul>
+
+    <div class="example">
+      <strong>Example:</strong> A temporary rise in heart rate during danger
+      is an adaptive response. Repeated or prolonged activation may
+      contribute to cumulative physiological burden.
+      <p class="zh">
+        短期調節不等於損害；長期反覆調節才可能增加累積負荷。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>SNS, HPA &amp; hormones</h3>
+
+    <ul>
+      <li>
+        <strong>SNS:</strong> the sympathetic nervous system contributes
+        to a rapid response, including increased heart rate and breathing.
+      </li>
+      <li>
+        <strong>Adrenaline:</strong> associated with rapid mobilisation
+        during the response.
+      </li>
+      <li>
+        <strong>HPA axis:</strong> hypothalamus → pituitary → adrenal glands.
+      </li>
+      <li>
+        <strong>Cortisol:</strong> participates in stress adaptation and
+        helps increase glucose availability.
+      </li>
+    </ul>
+
+    <p class="zh">
+      SNS 與快速反應及腎上腺素有關；HPA 軸涉及下丘腦、腦下垂體、
+      腎上腺及 cortisol。兩套系統會互相影響。
+    </p>
+
+    <p class="small">
+      <strong>Brain reminders:</strong> the amygdala is involved in
+      threat-related emotion; the hippocampus is important for memory.
+      These structures work within wider networks.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>ACEs: conventional ten-category framework</h3>
+
+    <p>
+      ACEs are a subset of childhood adversity. In this conventional
+      home-based framework, score each supported category once.
+    </p>
+
+    <details open>
+      <summary>Abuse and neglect: five categories</summary>
+      <ol>
+        <li>Physical abuse</li>
+        <li>Emotional abuse</li>
+        <li>Sexual abuse</li>
+        <li>Physical neglect</li>
+        <li>Emotional neglect</li>
+      </ol>
+    </details>
+
+    <details open>
+      <summary>Household challenges: five categories</summary>
+      <ol>
+        <li>Parental separation or divorce</li>
+        <li>Household substance misuse</li>
+        <li>Household mental illness</li>
+        <li>Violence against the mother</li>
+        <li>Incarcerated household member</li>
+      </ol>
+    </details>
+
+    <div class="tip">
+      <strong>Scoring rule:</strong> Count categories, not the number of
+      incidents. Count only what the case supports. If other categories
+      have not been assessed, the complete score may be unknown.
+      <p class="zh">
+        同一類發生多次仍計一分；不同類別各計一分。
+        題目沒有提供的經歷不可自行推定。
+      </p>
+    </div>
+
+    <div class="example">
+      <strong>Example:</strong> Emotional abuse + physical neglect +
+      household substance misuse = <strong>3 categories</strong>.
+    </div>
+
+    <p>
+      <strong>Broader adversity:</strong> bullying, community violence and
+      discrimination can matter even when they are not included in the
+      conventional ten-category score.
+    </p>
+
+    <p class="zh">
+      ACE 分數不是診斷，也不能決定一個人的未來。支持、時間、
+      事件的嚴重程度及其他經驗都重要。
+    </p>
+  </div>
+
+  <a class="top-link" href="#top">↑ Back to sections</a>
+</section>
+
+</main>
+
+<footer>
+  <p>
+    Original revision notes. Check course materials and instructor guidance
+    for examinable scope, terminology and any details not shown here.
+  </p>
+</footer>
+
+</div>
+
+<script>
+const buttons = Array.from(document.querySelectorAll(".tab"));
+const panels = Array.from(document.querySelectorAll(".panel"));
+const storageKey = "ss5212-revision-last-section-v1";
+
+function showPanel(panelId, saveChoice = true) {
+  const validPanel = panels.some(panel => panel.id === panelId);
+  const targetId = validPanel ? panelId : "infancy";
+
+  panels.forEach(panel => {
+    const isActive = panel.id === targetId;
+
+    panel.classList.toggle("active", isActive);
+    panel.hidden = !isActive;
+  });
+
+  buttons.forEach(button => {
+    const isActive = button.dataset.panel === targetId;
+    button.setAttribute("aria-selected", String(isActive));
+  });
+
+  if (saveChoice) {
+    try {
+      localStorage.setItem(storageKey, targetId);
+    } catch (error) {
+      // The guide remains usable when browser storage is unavailable.
+    }
+  }
+}
+
+buttons.forEach(button => {
+  button.addEventListener("click", () => {
+    showPanel(button.dataset.panel);
+  });
+});
+
+let initialPanel = "infancy";
+
+try {
+  const savedPanel = localStorage.getItem(storageKey);
+
+  if (savedPanel) {
+    initialPanel = savedPanel;
+  }
+} catch (error) {
+  // Use the first section when browser storage is unavailable.
+}
+
+showPanel(initialPanel, false);
+</script>
+
+</body>
+</html>
+```
+
+這份網站適合在街上用來**快速重溫定義與比較**；回家後再用之前的 MC 網頁練習案例判斷，兩者可以配合使用。
